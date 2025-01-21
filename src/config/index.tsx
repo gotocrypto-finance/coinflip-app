@@ -1,11 +1,15 @@
 import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
+import { Address } from "viem";
 import { cookieStorage, createStorage } from "wagmi";
 import { mainnet, arbitrum, sepolia } from "wagmi/chains";
 
-// Get projectId from <https://cloud.reown.com>
-export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
+console.log("env:", process.env);
 
-if (!projectId) throw new Error("Project ID is not defined");
+// Get projectId from <https://cloud.reown.com>
+export const PROJECT_ID = process.env.NEXT_PUBLIC_PROJECT_ID as string;
+export const CONTRACT_ADDRESS = "0xb1" as Address;
+
+if (!PROJECT_ID) throw new Error("Project ID is not defined");
 
 const metadata = {
   name: "AppKit example",
@@ -18,11 +22,9 @@ const metadata = {
 const chains = [mainnet, arbitrum, sepolia] as const;
 export const config = defaultWagmiConfig({
   chains,
-  projectId,
+  projectId: PROJECT_ID,
   metadata,
   auth: {
-    email: true,
-    socials: ["google", "x", "github", "discord", "apple"],
     showWallets: true,
     walletFeatures: true,
   },

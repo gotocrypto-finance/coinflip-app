@@ -1,11 +1,33 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import clsx from "clsx";
+
+import { useWriteContract } from "wagmi";
+
+import { CONTRACT_ADDRESS } from "@/config";
+import { CoinSide } from "@/types/coinSide";
+import abi from "@/abi/coinflip.abi.json";
+import { generateSeed } from "@/utils/generateSeed";
 
 import Button, { ButtonSize, ButtonStyle } from "./Button";
 
 export default function GameControls() {
+  const { data: hash, writeContract } = useWriteContract();
+
   const [betAmount, setBetAmount] = useState(0);
+
+  const enterGame = (bet: CoinSide) => {
+    writeContract({
+      address: CONTRACT_ADDRESS,
+      abi,
+      functionName: "enter",
+      args: [generateSeed(), bet],
+    });
+  };
+
+  useEffect(() => {
+    console.log("Transaction Hash:", hash);
+  }, [hash]);
 
   return (
     <div className="flex flex-col">
@@ -79,8 +101,17 @@ export default function GameControls() {
           "grid grid-cols-2 gap-4 transition-all"
         )}
       >
-        <Button label="Heads" style={ButtonStyle.Tertiary} />
-        <Button label="Tails" style={ButtonStyle.Tertiary} />
+        <Button
+          label="Heads"
+          style={ButtonStyle.Tertiary}
+          onClick={() => enterGame(CoinSide.Heads)}
+        />
+
+        <Button
+          label="Tails"
+          style={ButtonStyle.Tertiary}
+          onClick={() => enterGame(CoinSide.Tails)}
+        />
       </div>
     </div>
   );
