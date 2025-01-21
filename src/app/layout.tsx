@@ -25,7 +25,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className="bg-grey-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100 flex flex-col w-screen h-screen">
+      <body className="bg-gray-800 text-gray-100 flex flex-col w-screen h-screen">
         <Web3ModalProvider initialState={initialState}>
           {children}
         </Web3ModalProvider>
