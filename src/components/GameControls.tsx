@@ -2,32 +2,68 @@ import { useEffect, useState } from "react";
 
 import clsx from "clsx";
 
-import { useWriteContract } from "wagmi";
+import { useChainId, useReadContract, useWriteContract } from "wagmi";
+
+import abi from "@/abi/coinflip.abi.json";
 
 import { CONTRACT_ADDRESS } from "@/config";
 import { CoinSide } from "@/types/coinSide";
-import abi from "@/abi/coinflip.abi.json";
 import { generateSeed } from "@/utils/generateSeed";
 
 import Button, { ButtonSize, ButtonStyle } from "./Button";
+import Loading from "./Loading";
 
 export default function GameControls() {
-  const { data: hash, writeContract } = useWriteContract();
+  const chainId = useChainId();
+  const { data: hash, isPending, writeContract } = useWriteContract();
+  const { data: balance } = useReadContract({
+    address: CONTRACT_ADDRESS,
+    abi,
+    functionName: "getBalance",
+  });
 
   const [betAmount, setBetAmount] = useState(0);
 
   const enterGame = (bet: CoinSide) => {
-    writeContract({
-      address: CONTRACT_ADDRESS,
-      abi,
-      functionName: "enter",
-      args: [generateSeed(), bet],
-    });
+    const args = [generateSeed(), bet];
+    const functionName = "enter";
+
+    console.log(
+      `Entering game by calling '${functionName}' on '${CONTRACT_ADDRESS}' with args: [${args}]`
+    );
+
+    writeContract(
+      {
+        address: CONTRACT_ADDRESS,
+        abi,
+        functionName,
+        args,
+      },
+      {
+        onSuccess: () => {
+          console.log("Transaction successful!");
+        },
+        onSettled: () => {
+          console.log("Transaction settled!");
+        },
+        onError: (error) => {
+          console.error("Transaction error!", error);
+        },
+      }
+    );
   };
 
   useEffect(() => {
-    console.log("Transaction Hash:", hash);
+    hash && console.log("Transaction Hash:", hash);
   }, [hash]);
+
+  useEffect(() => {
+    balance && console.log("Balance:", balance);
+  }, [balance]);
+
+  useEffect(() => {
+    chainId && console.log("Chain ID:", chainId);
+  }, [chainId]);
 
   return (
     <div className="flex flex-col">
@@ -101,17 +137,25 @@ export default function GameControls() {
           "grid grid-cols-2 gap-4 transition-all"
         )}
       >
-        <Button
-          label="Heads"
-          style={ButtonStyle.Tertiary}
-          onClick={() => enterGame(CoinSide.Heads)}
-        />
+        {isPending ? (
+          <div className="col-span-2 flex items-center justify-center">
+            <Loading />
+          </div>
+        ) : (
+          <>
+            <Button
+              label="Heads"
+              style={ButtonStyle.Tertiary}
+              onClick={() => enterGame(CoinSide.Heads)}
+            />
 
-        <Button
-          label="Tails"
-          style={ButtonStyle.Tertiary}
-          onClick={() => enterGame(CoinSide.Tails)}
-        />
+            <Button
+              label="Tails"
+              style={ButtonStyle.Tertiary}
+              onClick={() => enterGame(CoinSide.Tails)}
+            />
+          </>
+        )}
       </div>
     </div>
   );
