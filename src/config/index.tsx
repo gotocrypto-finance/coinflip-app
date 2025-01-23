@@ -1,6 +1,6 @@
 import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
-import { Address } from "viem";
-import { cookieStorage, createStorage } from "wagmi";
+import { Address, createClient, http } from "viem";
+import { cookieStorage, createConfig, createStorage } from "wagmi";
 import { mainnet, arbitrum, sepolia, baseSepolia } from "wagmi/chains";
 
 // Get projectId from <https://cloud.reown.com>
@@ -20,6 +20,12 @@ const metadata = {
 // Create wagmiConfig
 const chains = [baseSepolia] as const;
 
+export const transports = {
+  [baseSepolia.id]: http(
+    `https://base-sepolia.g.alchemy.com/v2/uzc0hAMMGxoGwQrid_sQCwgRcYswDrN2`
+  ),
+};
+
 export const config = defaultWagmiConfig({
   chains,
   projectId: PROJECT_ID,
@@ -32,4 +38,5 @@ export const config = defaultWagmiConfig({
   storage: createStorage({
     storage: cookieStorage,
   }),
+  transports,
 });

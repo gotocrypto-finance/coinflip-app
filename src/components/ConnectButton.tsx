@@ -1,7 +1,8 @@
 "use client";
 
-import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useAccount, useDisconnect } from "wagmi";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
+
 import Button, { ButtonStyle } from "./Button";
 
 export default function ConnectButton() {

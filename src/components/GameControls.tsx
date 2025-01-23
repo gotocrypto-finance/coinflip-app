@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
-
 import clsx from "clsx";
-
+import { useEffect, useState } from "react";
+import { formatEther, parseEther } from "viem";
 import { useChainId, useReadContract, useWriteContract } from "wagmi";
 
 import abi from "@/abi/coinflip.abi.json";
-
 import { CONTRACT_ADDRESS } from "@/config";
 import { CoinSide } from "@/types/coinSide";
 import { generateSeed } from "@/utils/generateSeed";
@@ -15,21 +13,31 @@ import Loading from "./Loading";
 
 export default function GameControls() {
   const chainId = useChainId();
+
   const { data: hash, isPending, writeContract } = useWriteContract();
+
+  const { data: allowedValues } = useReadContract({
+    address: CONTRACT_ADDRESS,
+    abi,
+    functionName: "getAllowedValues",
+  });
+
   const { data: balance } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi,
     functionName: "getBalance",
   });
 
-  const [betAmount, setBetAmount] = useState(0);
+  const [betAmount, setBetAmount] = useState(parseEther("0"));
 
-  const enterGame = (bet: CoinSide) => {
+  const enterGame = async (bet: CoinSide) => {
     const args = [generateSeed(), bet];
     const functionName = "enter";
 
     console.log(
-      `Entering game by calling '${functionName}' on '${CONTRACT_ADDRESS}' with args: [${args}]`
+      `Entering game by calling '${functionName}' on '${CONTRACT_ADDRESS}' with args: [${args}] and value: ${parseEther(
+        formatEther(betAmount)
+      )} (${formatEther(betAmount)})`
     );
 
     writeContract(
@@ -38,6 +46,7 @@ export default function GameControls() {
         abi,
         functionName,
         args,
+        value: parseEther(formatEther(betAmount)),
       },
       {
         onSuccess: () => {
@@ -47,7 +56,7 @@ export default function GameControls() {
           console.log("Transaction settled!");
         },
         onError: (error) => {
-          console.error("Transaction error!", error);
+          console.warn("Transaction error!", error);
         },
       }
     );
@@ -62,78 +71,47 @@ export default function GameControls() {
   }, [balance]);
 
   useEffect(() => {
+    allowedValues && console.log("Allowed Values:", allowedValues);
+  }, [allowedValues]);
+
+  useEffect(() => {
     chainId && console.log("Chain ID:", chainId);
   }, [chainId]);
 
   return (
     <div className="flex flex-col">
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        <Button
-          label="0.05 Base"
-          size={ButtonSize.Small}
-          style={
-            betAmount === 0.05 ? ButtonStyle.Secondary : ButtonStyle.Primary
-          }
-          onClick={() => setBetAmount(0.05)}
-        />
+      <div className="grid grid-cols-2 gap-4 mb-8">
+        {(allowedValues as Array<bigint>)?.map(
+          (value: bigint, index: number) => (
+            <Button
+              key={index}
+              label={`${formatEther(value)} ETH`}
+              size={ButtonSize.Small}
+              style={
+                betAmount === value
+                  ? ButtonStyle.Secondary
+                  : ButtonStyle.Primary
+              }
+              onClick={() => setBetAmount(value)}
+            />
+          )
+        )}
 
         <Button
-          label="0.1 Base"
+          label="Clear"
           size={ButtonSize.Small}
-          style={
-            betAmount === 0.1 ? ButtonStyle.Secondary : ButtonStyle.Primary
-          }
-          onClick={() => setBetAmount(0.1)}
+          fullWidth
+          style={ButtonStyle.Primary}
+          onClick={() => setBetAmount(parseEther("0"))}
         />
-
-        <Button
-          label="0.25 Base"
-          size={ButtonSize.Small}
-          style={
-            betAmount === 0.25 ? ButtonStyle.Secondary : ButtonStyle.Primary
-          }
-          onClick={() => setBetAmount(0.25)}
-        />
-
-        <Button
-          label="0.5 Base"
-          size={ButtonSize.Small}
-          style={
-            betAmount === 0.5 ? ButtonStyle.Secondary : ButtonStyle.Primary
-          }
-          onClick={() => setBetAmount(0.5)}
-        />
-
-        <Button
-          label="0.75 Base"
-          size={ButtonSize.Small}
-          style={
-            betAmount === 0.75 ? ButtonStyle.Secondary : ButtonStyle.Primary
-          }
-          onClick={() => setBetAmount(0.75)}
-        />
-
-        <Button
-          label="1 Base"
-          size={ButtonSize.Small}
-          style={betAmount === 1 ? ButtonStyle.Secondary : ButtonStyle.Primary}
-          onClick={() => setBetAmount(1)}
-        />
-
-        <div className="col-span-3">
-          <Button
-            label="Clear"
-            size={ButtonSize.Small}
-            fullWidth
-            style={ButtonStyle.Primary}
-            onClick={() => setBetAmount(0)}
-          />
-        </div>
       </div>
 
       <div
         className={clsx(
-          { "opacity-100": betAmount > 0, "opacity-25": betAmount === 0 },
+          {
+            "opacity-100": betAmount > 0,
+            "opacity-25": betAmount === parseEther("0"),
+          },
           "grid grid-cols-2 gap-4 transition-all"
         )}
       >
