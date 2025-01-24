@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 
+import { useQueryClient } from "@tanstack/react-query";
+
 import { readContract } from "viem/actions";
 import { createClient } from "viem";
 
-import { useReadContract } from "wagmi";
+import { useBlockNumber, useReadContract } from "wagmi";
 
 import abi from "@/abi/coinflip.abi.json";
 import { transports, CONTRACT_ADDRESS, chains } from "@/config";
@@ -14,6 +16,9 @@ export const MAX_GAMES = 15;
 export default function useRecentGames() {
   const [recentGames, setRecentGames] = useState<Array<NumberedGame>>([]);
 
+  const queryClient = useQueryClient();
+  const { data: blockNumber } = useBlockNumber({ watch: true });
+
   const { data: completedGamesCount } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi,
@@ -21,6 +26,12 @@ export default function useRecentGames() {
   });
 
   useEffect(() => {
+    queryClient.invalidateQueries();
+  }, [blockNumber, queryClient]);
+
+  useEffect(() => {
+    console.log("completedGamesCount:", completedGamesCount);
+
     if ((completedGamesCount as number) > 0) {
       const client = createClient({ transport: transports[chains[0].id] });
 

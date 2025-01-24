@@ -1,6 +1,6 @@
 import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
-import { Address, createClient, http } from "viem";
-import { cookieStorage, createConfig, createStorage } from "wagmi";
+import { Address, http } from "viem";
+import { cookieStorage, createStorage } from "wagmi";
 import { mainnet, arbitrum, sepolia, baseSepolia } from "wagmi/chains";
 
 // Get projectId from <https://cloud.reown.com>
@@ -39,4 +39,5 @@ export const config = defaultWagmiConfig({
     storage: cookieStorage,
   }),
   transports,
+  pollingInterval: 1000,
 });
