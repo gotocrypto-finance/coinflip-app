@@ -1,7 +1,6 @@
 "use client";
 
 import { useAccount } from "wagmi";
-
 import { useState } from "react";
 
 import Button, { ButtonStyle } from "@/components/Button";
@@ -11,21 +10,22 @@ import RecentGames from "@/components/RecentGames";
 
 export default function Home() {
   const { isConnected } = useAccount();
-
   const [isFlipping, setIsFlipping] = useState(false);
 
   return (
-    <>
+    <div className="flex flex-col h-screen">
       <header className="w-full py-4 flex justify-between items-center flex-col">
         <h1 className="text-5xl font-bold text-yellow-400">Coin Flip!</h1>
       </header>
 
-      <main className="flex grow flex-col justify-end items-center pb-4 px-6">
-        <div className="flex grow justify-center items-center border-solid border-white border-2 rounded-xl mb-4 w-full">
-          <RecentGames />
+      <main className="flex grow flex-col justify-start items-center pb-4 px-6">
+        <div className="flex grow border-solid border-white border-2 rounded-xl overflow-y-auto">
+          <div className="block h-0 p-2">
+            <RecentGames />
+          </div>
         </div>
 
-        <div className="flex items-center">
+        <div className="flex items-center mt-8">
           {isConnected ? (
             isFlipping ? (
               <GameControls />
@@ -42,9 +42,9 @@ export default function Home() {
         </div>
       </main>
 
-      <footer className="flex justify-center py-4">
+      <footer className="w-full py-4 flex justify-center">
         Copyright &copy; 2025 GoToCrypto
       </footer>
-    </>
+    </div>
   );
 }

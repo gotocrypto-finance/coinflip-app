@@ -129,7 +129,7 @@ export default function GameControls() {
 
             <Button
               label="Tails"
-              style={ButtonStyle.Tertiary}
+              style={ButtonStyle.Neutral}
               onClick={() => enterGame(CoinSide.Tails)}
             />
           </>

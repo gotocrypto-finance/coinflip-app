@@ -2,15 +2,14 @@ import { useEffect, useState } from "react";
 
 import { readContract } from "viem/actions";
 import { createClient } from "viem";
-import { baseSepolia } from "viem/chains";
 
 import { useReadContract } from "wagmi";
 
 import abi from "@/abi/coinflip.abi.json";
-import { transports, CONTRACT_ADDRESS } from "@/config";
+import { transports, CONTRACT_ADDRESS, chains } from "@/config";
 import { Game, NumberedGame } from "@/interfaces/game";
 
-export const MAX_GAMES = 7;
+export const MAX_GAMES = 15;
 
 export default function useRecentGames() {
   const [recentGames, setRecentGames] = useState<Array<NumberedGame>>([]);
@@ -23,7 +22,7 @@ export default function useRecentGames() {
 
   useEffect(() => {
     if ((completedGamesCount as number) > 0) {
-      const client = createClient({ transport: transports[baseSepolia.id] });
+      const client = createClient({ transport: transports[chains[0].id] });
 
       const readContracts = [];
 
@@ -47,11 +46,10 @@ export default function useRecentGames() {
               number: index,
             }))
             .slice(
-              games.length < MAX_GAMES
-                ? games.length
-                : games.length - MAX_GAMES,
+              games.length < MAX_GAMES ? 0 : games.length - MAX_GAMES,
               games.length
             )
+            .reverse()
         )
       );
     }

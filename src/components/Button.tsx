@@ -10,6 +10,7 @@ export enum ButtonStyle {
   Primary = "primary",
   Secondary = "secondary",
   Tertiary = "tertiary",
+  Neutral = "neutral",
 }
 
 export interface ButtonProps {
@@ -42,6 +43,11 @@ export default function Button({
 
     case ButtonStyle.Tertiary:
       styleClasses = "bg-yellow-500 text-black";
+
+      break;
+
+    case ButtonStyle.Neutral:
+      styleClasses = "bg-gray-300 text-black";
 
       break;
   }

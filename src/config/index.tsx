@@ -18,7 +18,7 @@ const metadata = {
 };
 
 // Create wagmiConfig
-const chains = [baseSepolia] as const;
+export const chains = [baseSepolia] as const;
 
 export const transports = {
   [baseSepolia.id]: http(
