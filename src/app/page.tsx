@@ -1,7 +1,7 @@
 "use client";
 
 import { useAccount, useWriteContract } from "wagmi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import abi from "@/abi/coinflip.abi.json";
 
@@ -22,10 +22,17 @@ export default function Home() {
 
   const { data: hash, isPending, writeContract } = useWriteContract();
 
+  const [isBet, setIsBet] = useState(false);
   const [isFlipping, setIsFlipping] = useState(false);
   const [isGameInProgress, setIsGameInProgress] = useState(false);
 
   const [playerBet, setPlayerBet] = useState<CoinSide | null>(null);
+
+  useEffect(() => {
+    if (!isGameInProgress) {
+      setIsBet(false);
+    }
+  }, [isGameInProgress]);
 
   const enterGame = async (bet: CoinSide, betAmount: bigint) => {
     const args = [generateSeed(), bet];
@@ -51,12 +58,16 @@ export default function Home() {
       {
         onSuccess: () => {
           console.log("Transaction successful!");
+
+          setIsBet(true);
         },
         onSettled: () => {
           console.log("Transaction settled!");
         },
         onError: (error) => {
           console.warn("Transaction error!", error);
+
+          setTimeout(() => enterGame(bet, betAmount), 1000);
         },
       }
     );
@@ -81,6 +92,7 @@ export default function Home() {
               isGameInProgress && playerBet !== null ? (
                 <GameProgress
                   playerBet={playerBet}
+                  isBet={isBet}
                   setIsGameInProgress={setIsGameInProgress}
                 />
               ) : (

@@ -14,11 +14,13 @@ import Modal from "./Modal";
 
 export interface GameProgressProps {
   playerBet: CoinSide;
+  isBet: boolean;
   setIsGameInProgress: (isGameInProgress: boolean) => void;
 }
 
 export default function GameProgress({
   playerBet,
+  isBet,
   setIsGameInProgress,
 }: GameProgressProps) {
   const [finishedGame, setFinishedGame] = useState<NumberedGame>();
@@ -30,14 +32,8 @@ export default function GameProgress({
 
   useEffect(() => {
     if (recentGames.length > 0) {
-      console.log(
-        "recentGames:",
-        recentGames.length,
-        "lastRecentGamesCount:",
-        lastRecentGamesCount
-      );
-
       if (
+        isBet &&
         lastRecentGamesCount > 0 &&
         recentGames.length > lastRecentGamesCount
       ) {
@@ -52,6 +48,7 @@ export default function GameProgress({
 
   const claimPrize = () => {
     const functionName = "claim";
+
     console.log(
       `Claiming prize by calling '${functionName}' on '${CONTRACT_ADDRESS}'`
     );
