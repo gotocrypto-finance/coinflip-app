@@ -1,16 +1,16 @@
+import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { useWriteContract } from "wagmi";
 
 import abi from "@/abi/coinflip.abi.json";
+import { CONTRACT_ADDRESS } from "@/config";
 import useRecentGames from "@/hooks/useRecentGames";
+import { NumberedGame } from "@/interfaces/game";
 import { CoinSide } from "@/types/coinSide";
 
+import Button, { ButtonSize, ButtonStyle } from "./Button";
 import Loading from "./Loading";
 import Modal from "./Modal";
-import clsx from "clsx";
-import { NumberedGame } from "@/interfaces/game";
-import Button, { ButtonSize, ButtonStyle } from "./Button";
-import { CONTRACT_ADDRESS } from "@/config";
 
 export interface GameProgressProps {
   playerBet: CoinSide;
@@ -30,9 +30,21 @@ export default function GameProgress({
 
   useEffect(() => {
     if (recentGames.length > 0) {
-      if (lastRecentGamesCount > 0) {
+      console.log(
+        "recentGames:",
+        recentGames.length,
+        "lastRecentGamesCount:",
+        lastRecentGamesCount
+      );
+
+      if (
+        lastRecentGamesCount > 0 &&
+        recentGames.length > lastRecentGamesCount
+      ) {
+        console.log("setting finished game");
         setFinishedGame(recentGames[0]);
       } else {
+        console.log("setting last recent games:", recentGames.length);
         setLastRecentGamesCount(recentGames.length);
       }
     }

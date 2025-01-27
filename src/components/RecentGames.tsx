@@ -19,8 +19,8 @@ export default function RecentGames() {
               Game {(game as any).number}
             </div>
 
-            <div className="grid grid-cols-4 text-xs">
-              <div className="">Winning Flip:</div>
+            <div className="grid grid-cols-4 text-xs items-center">
+              <div className="mr-2">Winning Flip:</div>
               <div className="col-span-3">
                 <div
                   className={clsx(

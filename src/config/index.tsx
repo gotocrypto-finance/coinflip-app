@@ -6,7 +6,7 @@ import { mainnet, arbitrum, sepolia, baseSepolia } from "wagmi/chains";
 // Get projectId from <https://cloud.reown.com>
 export const PROJECT_ID = process.env.NEXT_PUBLIC_PROJECT_ID as string;
 export const CONTRACT_ADDRESS =
-  "0x1BeF97107fBCa21638C591207C323f76C7Bf0676" as Address;
+  "0x5354875cC19ED13335bac3cF5B723989D9908AA0" as Address;
 
 if (!PROJECT_ID) throw new Error("Project ID is not defined");
 
