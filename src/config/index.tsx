@@ -1,5 +1,5 @@
 import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
-import { Address, http } from "viem";
+import { Address, http, webSocket } from "viem";
 import { cookieStorage, createStorage } from "wagmi";
 import { mainnet, arbitrum, sepolia, baseSepolia } from "wagmi/chains";
 
@@ -38,6 +38,5 @@ export const config = defaultWagmiConfig({
   storage: createStorage({
     storage: cookieStorage,
   }),
-  transports,
   pollingInterval: 1000,
 });

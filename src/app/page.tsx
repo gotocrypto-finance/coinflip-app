@@ -80,7 +80,7 @@ export default function Home() {
       </header>
 
       <main className="flex grow flex-col justify-start items-center pb-4 px-6">
-        <div className="flex grow border-solid border-white border-2 rounded-xl overflow-y-auto w-full">
+        <div className="flex grow border-solid border-white border-2 rounded-xl overflow-y-auto w-full max-w-lg">
           <div className="block h-0 p-2">
             <RecentGames />
           </div>
