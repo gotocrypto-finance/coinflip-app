@@ -16,6 +16,7 @@ import RecentGames from "@/components/RecentGames";
 import { generateSeed } from "@/utils/generateSeed";
 import { formatEther, parseEther } from "viem";
 import GameProgress from "@/components/GameProgress";
+import PlayerMenu from "@/components/PlayerMenu";
 
 export default function Home() {
   const { isConnected } = useAccount();
@@ -75,12 +76,16 @@ export default function Home() {
 
   return (
     <div className="flex flex-col h-screen">
-      <header className="w-full py-4 flex justify-between items-center flex-col">
-        <h1 className="text-5xl font-bold text-yellow-400">Coin Flip!</h1>
+      <header className="w-full px-6 py-4 flex justify-between items-center max-w-lg mx-auto">
+        <h1 className="text-5xl font-bold text-yellow-400 flex">Coin Flip!</h1>
+
+        <div className="flex">
+          <PlayerMenu />
+        </div>
       </header>
 
-      <main className="flex grow flex-col justify-start items-center pb-4 px-6">
-        <div className="flex grow border-solid border-white border-2 rounded-xl overflow-y-auto w-full max-w-lg">
+      <main className="flex grow flex-col justify-start items-center pb-4 px-6 max-w-lg mx-auto">
+        <div className="flex grow border-solid border-white border-2 rounded-xl overflow-y-auto w-full">
           <div className="block h-0 p-2">
             <RecentGames />
           </div>

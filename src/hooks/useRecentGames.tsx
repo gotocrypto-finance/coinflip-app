@@ -56,6 +56,10 @@ export default function useRecentGames() {
               ...game,
               number: index,
             }))
+            .slice(
+              games.length < MAX_GAMES ? 0 : games.length - MAX_GAMES,
+              games.length
+            )
             .reverse()
         )
       );

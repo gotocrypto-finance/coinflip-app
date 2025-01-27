@@ -2,11 +2,10 @@ import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { useWriteContract } from "wagmi";
 
-import abi from "@/abi/coinflip.abi.json";
-import { CONTRACT_ADDRESS } from "@/config";
 import useRecentGames from "@/hooks/useRecentGames";
 import { NumberedGame } from "@/interfaces/game";
 import { CoinSide } from "@/types/coinSide";
+import { claim } from "@/utils/claim";
 
 import Button, { ButtonSize, ButtonStyle } from "./Button";
 import Loading from "./Loading";
@@ -24,56 +23,27 @@ export default function GameProgress({
   setIsGameInProgress,
 }: GameProgressProps) {
   const [finishedGame, setFinishedGame] = useState<NumberedGame>();
-  const [lastRecentGamesCount, setLastRecentGamesCount] = useState(0);
-
+  const [lastGameNumber, setLastGameNumber] = useState(0);
   const { recentGames } = useRecentGames();
-
   const { data: hash, isPending, writeContract } = useWriteContract();
 
   useEffect(() => {
     if (recentGames.length > 0) {
       if (
         isBet &&
-        lastRecentGamesCount > 0 &&
-        recentGames.length > lastRecentGamesCount
+        lastGameNumber > 0 &&
+        recentGames[0].number > lastGameNumber
       ) {
         console.log("setting finished game");
+
         setFinishedGame(recentGames[0]);
       } else {
-        console.log("setting last recent games:", recentGames.length);
-        setLastRecentGamesCount(recentGames.length);
+        console.log("setting last game number:", recentGames[0]);
+
+        setLastGameNumber(recentGames[0].number);
       }
     }
   }, [recentGames]);
-
-  const claimPrize = () => {
-    const functionName = "claim";
-
-    console.log(
-      `Claiming prize by calling '${functionName}' on '${CONTRACT_ADDRESS}'`
-    );
-
-    writeContract(
-      {
-        address: CONTRACT_ADDRESS,
-        abi,
-        functionName,
-      },
-      {
-        onSuccess: () => {
-          console.log("Transaction successful!");
-        },
-        onSettled: () => {
-          console.log("Transaction settled!");
-
-          setIsGameInProgress(false);
-        },
-        onError: (error) => {
-          console.warn("Transaction error!", error);
-        },
-      }
-    );
-  };
 
   return (
     <Modal>
@@ -132,7 +102,11 @@ export default function GameProgress({
                     style={ButtonStyle.Tertiary}
                     size={ButtonSize.Medium}
                     label="Claim Prize!"
-                    onClick={() => claimPrize()}
+                    onClick={() =>
+                      claim(writeContract, () => {
+                        setIsGameInProgress(false);
+                      })
+                    }
                   />
                 </>
               ) : (
