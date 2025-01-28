@@ -12,6 +12,11 @@ Then install all dependencies by running:
 npm i
 ```
 
+Next step is to set Project ID in `.env` file:
+```
+NEXT_PUBLIC_PROJECT_ID=dba8091b368d9432c67aabb2f07c2733
+```
+
 After that's done you can run the development server:
 
 ```bash
