@@ -18,16 +18,14 @@ createWeb3Modal({
   themeMode: "light",
 });
 
-export default function Web3ModalProvider({
+export const Web3ModalProvider = ({
   children,
   initialState,
 }: {
   children: ReactNode;
   initialState?: State;
-}) {
-  return (
-    <WagmiProvider config={config} initialState={initialState}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </WagmiProvider>
-  );
-}
+}) => (
+  <WagmiProvider config={config} initialState={initialState}>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  </WagmiProvider>
+);

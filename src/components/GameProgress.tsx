@@ -14,13 +14,13 @@ import Modal from "./Modal";
 export interface GameProgressProps {
   playerBet: CoinSide;
   isBet: boolean;
-  setIsGameInProgress: (isGameInProgress: boolean) => void;
+  exitGame: () => void;
 }
 
 export default function GameProgress({
   playerBet,
   isBet,
-  setIsGameInProgress,
+  exitGame,
 }: GameProgressProps) {
   const [finishedGame, setFinishedGame] = useState<NumberedGame>();
   const [lastGameNumber, setLastGameNumber] = useState(0);
@@ -38,7 +38,7 @@ export default function GameProgress({
 
         setFinishedGame(recentGames[0]);
       } else {
-        console.log("setting last game number:", recentGames[0]);
+        console.log("setting last game number:", recentGames[0].number);
 
         setLastGameNumber(recentGames[0].number);
       }
@@ -47,7 +47,14 @@ export default function GameProgress({
 
   return (
     <Modal>
-      <div className="flex flex-col items-center justify-center w-full h-full">
+      <div className="flex flex-col items-center justify-center w-full h-full relative">
+        <div
+          className="absolute top-0 right-2 text-2xl cursor-pointer"
+          onClick={() => exitGame()}
+        >
+          &#x2715;
+        </div>
+
         <div className="text-2xl">
           {finishedGame ? <>Game Finished!</> : <>Game In Progress...</>}
         </div>
@@ -102,11 +109,7 @@ export default function GameProgress({
                     style={ButtonStyle.Tertiary}
                     size={ButtonSize.Medium}
                     label="Claim Prize!"
-                    onClick={() =>
-                      claim(writeContract, () => {
-                        setIsGameInProgress(false);
-                      })
-                    }
+                    onClick={() => claim(writeContract, () => exitGame())}
                   />
                 </>
               ) : (
@@ -117,7 +120,7 @@ export default function GameProgress({
                     style={ButtonStyle.Tertiary}
                     size={ButtonSize.Medium}
                     label="Try Again!"
-                    onClick={() => setIsGameInProgress(false)}
+                    onClick={() => exitGame()}
                   />
                 </>
               )}

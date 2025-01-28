@@ -37,7 +37,11 @@ export default function useRecentGames() {
 
       const readContracts = [];
 
-      for (let i = 0; i < (completedGamesCount as number); i++) {
+      for (
+        let i = Math.max(0, Number(completedGamesCount) - MAX_GAMES);
+        i < Number(completedGamesCount);
+        i++
+      ) {
         readContracts.push(
           readContract(client, {
             address: CONTRACT_ADDRESS,
@@ -52,9 +56,9 @@ export default function useRecentGames() {
         setRecentGames(
           (games as Array<Game>)
             .sort((a, b) => (a.resultBlock > b.resultBlock ? 1 : -1))
-            .map((game: Game, index) => ({
+            .map((game: Game, index, array) => ({
               ...game,
-              number: index,
+              number: Number(completedGamesCount) - array.length + index,
             }))
             .slice(
               games.length < MAX_GAMES ? 0 : games.length - MAX_GAMES,

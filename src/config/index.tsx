@@ -1,5 +1,5 @@
 import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
-import { Address, http, webSocket } from "viem";
+import { Address, http } from "viem";
 import { cookieStorage, createStorage } from "wagmi";
 import { mainnet, arbitrum, sepolia, baseSepolia } from "wagmi/chains";
 
@@ -21,9 +21,7 @@ const metadata = {
 export const chains = [baseSepolia] as const;
 
 export const transports = {
-  [baseSepolia.id]: http(
-    `https://base-sepolia.g.alchemy.com/v2/uzc0hAMMGxoGwQrid_sQCwgRcYswDrN2`
-  ),
+  [baseSepolia.id]: http(`https://sepolia.base.org`),
 };
 
 export const config = defaultWagmiConfig({

@@ -20,6 +20,17 @@ export default function RecentGames() {
             </div>
 
             <div className="grid grid-cols-4 text-xs items-center">
+              <div className="mr-2">Block:</div>
+              <div className="col-span-3">
+                <div
+                  className={clsx(
+                    "w-5 h-5 rounded-full shadow-inner-strong text-white inline-flex items-center justify-"
+                  )}
+                >
+                  {game.resultBlock}
+                </div>
+              </div>
+
               <div className="mr-2">Winning Flip:</div>
               <div className="col-span-3">
                 <div

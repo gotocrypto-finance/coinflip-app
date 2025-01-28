@@ -1,13 +1,14 @@
 "use client";
 
 import { useAccount, useWriteContract } from "wagmi";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import abi from "@/abi/coinflip.abi.json";
 
 import { CoinSide } from "@/types/coinSide";
 
 import { CONTRACT_ADDRESS } from "@/config";
+import { useGameState } from "@/context/gameState";
 
 import Button, { ButtonStyle } from "@/components/Button";
 import ConnectButton from "@/components/ConnectButton";
@@ -23,11 +24,16 @@ export default function Home() {
 
   const { data: hash, isPending, writeContract } = useWriteContract();
 
-  const [isBet, setIsBet] = useState(false);
-  const [isFlipping, setIsFlipping] = useState(false);
-  const [isGameInProgress, setIsGameInProgress] = useState(false);
-
-  const [playerBet, setPlayerBet] = useState<CoinSide | null>(null);
+  const {
+    isBet,
+    setIsBet,
+    isFlipping,
+    setIsFlipping,
+    isGameInProgress,
+    setIsGameInProgress,
+    playerBet,
+    setPlayerBet,
+  } = useGameState();
 
   useEffect(() => {
     if (!isGameInProgress) {
@@ -35,9 +41,13 @@ export default function Home() {
     }
   }, [isGameInProgress]);
 
-  const enterGame = async (bet: CoinSide, betAmount: bigint) => {
-    const args = [generateSeed(), bet];
+  const enterGame = (bet: CoinSide | null, betAmount: bigint) => {
     const functionName = "enter";
+
+    const args = [generateSeed(), bet];
+
+    setPlayerBet(bet);
+    setIsGameInProgress(true);
 
     console.log(
       `Entering game by calling '${functionName}' on '${CONTRACT_ADDRESS}' with args: [${args}] and value: ${parseEther(
@@ -45,8 +55,7 @@ export default function Home() {
       )} (${formatEther(betAmount)})`
     );
 
-    setIsGameInProgress(true);
-    setPlayerBet(bet);
+    (window as any).gameOn = true;
 
     writeContract(
       {
@@ -59,8 +68,6 @@ export default function Home() {
       {
         onSuccess: () => {
           console.log("Transaction successful!");
-
-          setIsBet(true);
         },
         onSettled: () => {
           console.log("Transaction settled!");
@@ -68,10 +75,20 @@ export default function Home() {
         onError: (error) => {
           console.warn("Transaction error!", error);
 
-          setTimeout(() => enterGame(bet, betAmount), 1000);
+          if ((window as any).gameOn)
+            setTimeout(() => {
+              if ((window as any).gameOn) enterGame(bet, betAmount);
+            }, 1000);
         },
       }
     );
+  };
+
+  const exitGame = () => {
+    (window as any).gameOn = false;
+
+    setIsGameInProgress(false);
+    setPlayerBet(null);
   };
 
   return (
@@ -98,7 +115,7 @@ export default function Home() {
                 <GameProgress
                   playerBet={playerBet}
                   isBet={isBet}
-                  setIsGameInProgress={setIsGameInProgress}
+                  exitGame={exitGame}
                 />
               ) : (
                 <GameControls enterGame={enterGame} />
