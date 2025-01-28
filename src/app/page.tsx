@@ -25,8 +25,6 @@ export default function Home() {
   const { data: hash, isPending, writeContract } = useWriteContract();
 
   const {
-    isBet,
-    setIsBet,
     isFlipping,
     setIsFlipping,
     isGameInProgress,
@@ -34,12 +32,6 @@ export default function Home() {
     playerBet,
     setPlayerBet,
   } = useGameState();
-
-  useEffect(() => {
-    if (!isGameInProgress) {
-      setIsBet(false);
-    }
-  }, [isGameInProgress]);
 
   const enterGame = (bet: CoinSide | null, betAmount: bigint) => {
     const functionName = "enter";
@@ -112,11 +104,7 @@ export default function Home() {
           {isConnected ? (
             isFlipping ? (
               isGameInProgress && playerBet !== null ? (
-                <GameProgress
-                  playerBet={playerBet}
-                  isBet={isBet}
-                  exitGame={exitGame}
-                />
+                <GameProgress playerBet={playerBet} exitGame={exitGame} />
               ) : (
                 <GameControls enterGame={enterGame} />
               )

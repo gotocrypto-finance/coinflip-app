@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { useWriteContract } from "wagmi";
 
+import { useGameState } from "@/context/gameState";
 import useRecentGames from "@/hooks/useRecentGames";
 import { NumberedGame } from "@/interfaces/game";
 import { CoinSide } from "@/types/coinSide";
@@ -13,13 +14,11 @@ import Modal from "./Modal";
 
 export interface GameProgressProps {
   playerBet: CoinSide;
-  isBet: boolean;
   exitGame: () => void;
 }
 
 export default function GameProgress({
   playerBet,
-  isBet,
   exitGame,
 }: GameProgressProps) {
   const [finishedGame, setFinishedGame] = useState<NumberedGame>();
@@ -29,11 +28,7 @@ export default function GameProgress({
 
   useEffect(() => {
     if (recentGames.length > 0) {
-      if (
-        isBet &&
-        lastGameNumber > 0 &&
-        recentGames[0].number > lastGameNumber
-      ) {
+      if (lastGameNumber > 0 && recentGames[0].number > lastGameNumber) {
         console.log("setting finished game");
 
         setFinishedGame(recentGames[0]);
