@@ -1,8 +1,7 @@
 import clsx from "clsx";
 import { useEffect, useState } from "react";
-import { useWriteContract } from "wagmi";
+import { useAccount, useWriteContract } from "wagmi";
 
-import { useGameState } from "@/context/gameState";
 import useRecentGames from "@/hooks/useRecentGames";
 import { NumberedGame } from "@/interfaces/game";
 import { CoinSide } from "@/types/coinSide";
@@ -23,17 +22,19 @@ export default function GameProgress({
 }: GameProgressProps) {
   const [finishedGame, setFinishedGame] = useState<NumberedGame>();
   const [lastGameNumber, setLastGameNumber] = useState(0);
+
   const { recentGames } = useRecentGames();
-  const { data: hash, isPending, writeContract } = useWriteContract();
+  const { writeContract } = useWriteContract();
+  const { address } = useAccount();
 
   useEffect(() => {
     if (recentGames.length > 0) {
       if (lastGameNumber > 0 && recentGames[0].number > lastGameNumber) {
-        console.log("setting finished game");
+        console.log("Game Finished: ", recentGames[0]);
 
         setFinishedGame(recentGames[0]);
       } else {
-        console.log("setting last game number:", recentGames[0].number);
+        console.log("Updating Last Game:", recentGames[0].number);
 
         setLastGameNumber(recentGames[0].number);
       }
@@ -96,7 +97,8 @@ export default function GameProgress({
         {finishedGame ? (
           <div className="text-4xl mt-6">
             <div className="flex flex-col items-center">
-              {finishedGame.winningBet === BigInt(playerBet) ? (
+              {finishedGame.winners.find((a) => a === address) &&
+              !finishedGame.loosers.find((a) => a === address) ? (
                 <>
                   <div className="mb-4">You Won!</div>
 

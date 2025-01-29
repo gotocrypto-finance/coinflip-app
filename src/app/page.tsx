@@ -1,13 +1,13 @@
 "use client";
 
 import { useAccount, useWriteContract } from "wagmi";
-import { useEffect } from "react";
+import { simulateContract } from "@wagmi/core";
 
 import abi from "@/abi/coinflip.abi.json";
 
 import { CoinSide } from "@/types/coinSide";
 
-import { CONTRACT_ADDRESS } from "@/config";
+import { config, CONTRACT_ADDRESS } from "@/config";
 import { useGameState } from "@/context/gameState";
 
 import Button, { ButtonStyle } from "@/components/Button";
@@ -22,7 +22,7 @@ import PlayerMenu from "@/components/PlayerMenu";
 export default function Home() {
   const { isConnected } = useAccount();
 
-  const { data: hash, isPending, writeContract } = useWriteContract();
+  const { writeContract } = useWriteContract();
 
   const {
     isFlipping,
@@ -33,31 +33,33 @@ export default function Home() {
     setPlayerBet,
   } = useGameState();
 
-  const enterGame = (bet: CoinSide | null, betAmount: bigint) => {
+  const enterGame = async (bet: CoinSide | null, betAmount: bigint) => {
     const functionName = "enter";
 
     const args = [generateSeed(), bet];
 
-    setPlayerBet(bet);
-    setIsGameInProgress(true);
+    const enterContractAttributes = {
+      address: CONTRACT_ADDRESS,
+      abi,
+      functionName,
+      args,
+      value: parseEther(formatEther(betAmount)),
+    };
 
-    console.log(
-      `Entering game by calling '${functionName}' on '${CONTRACT_ADDRESS}' with args: [${args}] and value: ${parseEther(
-        formatEther(betAmount)
-      )} (${formatEther(betAmount)})`
-    );
+    console.log("Simulating contract:", enterContractAttributes);
 
-    (window as any).gameOn = true;
+    try {
+      const { result } = await simulateContract(
+        config,
+        enterContractAttributes
+      );
 
-    writeContract(
-      {
-        address: CONTRACT_ADDRESS,
-        abi,
-        functionName,
-        args,
-        value: parseEther(formatEther(betAmount)),
-      },
-      {
+      console.log("Simulate result:", result);
+
+      setPlayerBet(bet);
+      setIsGameInProgress(true);
+
+      writeContract(enterContractAttributes, {
         onSuccess: () => {
           console.log("Transaction successful!");
         },
@@ -66,19 +68,14 @@ export default function Home() {
         },
         onError: (error) => {
           console.warn("Transaction error!", error);
-
-          if ((window as any).gameOn)
-            setTimeout(() => {
-              if ((window as any).gameOn) enterGame(bet, betAmount);
-            }, 1000);
         },
-      }
-    );
+      });
+    } catch (error) {
+      console.warn("Error simulating contract:", error);
+    }
   };
 
   const exitGame = () => {
-    (window as any).gameOn = false;
-
     setIsGameInProgress(false);
     setPlayerBet(null);
   };
@@ -93,7 +90,7 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="flex grow flex-col justify-start items-center pb-4 px-6 max-w-lg mx-auto">
+      <main className="flex grow flex-col justify-start items-center pb-4 px-6 w-[32rem] mx-auto">
         <div className="flex grow border-solid border-white border-2 rounded-xl overflow-y-auto w-full">
           <div className="block h-0 p-2">
             <RecentGames />
