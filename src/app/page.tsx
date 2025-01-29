@@ -95,7 +95,7 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="flex grow flex-col justify-start items-center pb-4 px-6 w-[32rem] mx-auto">
+      <main className="flex grow flex-col justify-start items-center pb-4 px-6 max-w-lg mx-auto">
         <div className="flex grow border-solid border-white border-2 rounded-xl overflow-y-auto w-full">
           <div className="block h-0 p-2">
             <RecentGames />
