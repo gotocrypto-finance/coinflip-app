@@ -29,7 +29,11 @@ export default function GameProgress({
 
   useEffect(() => {
     if (recentGames.length > 0) {
-      if (lastGameNumber > 0 && recentGames[0].number > lastGameNumber) {
+      if (
+        lastGameNumber > 0 &&
+        recentGames[0].number > lastGameNumber &&
+        !finishedGame
+      ) {
         console.log("Game Finished: ", recentGames[0]);
 
         setFinishedGame(recentGames[0]);

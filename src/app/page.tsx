@@ -18,6 +18,7 @@ import { generateSeed } from "@/utils/generateSeed";
 import { formatEther, parseEther } from "viem";
 import GameProgress from "@/components/GameProgress";
 import PlayerMenu from "@/components/PlayerMenu";
+import { useEffect } from "react";
 
 export default function Home() {
   const { isConnected } = useAccount();
@@ -80,6 +81,10 @@ export default function Home() {
     setPlayerBet(null);
   };
 
+  useEffect(() => {
+    console.info("Smart Contract Address:", CONTRACT_ADDRESS);
+  }, []);
+
   return (
     <div className="flex flex-col h-screen">
       <header className="w-full px-6 py-4 flex justify-between items-center max-w-lg mx-auto">
@@ -119,7 +124,7 @@ export default function Home() {
       </main>
 
       <footer className="w-full py-4 flex justify-center">
-        Copyright &copy; 2025 GoToCrypto
+        Copyright &copy; 2025 &nbsp;<a href="https://gtc.finance">GoToCrypto</a>
       </footer>
     </div>
   );
