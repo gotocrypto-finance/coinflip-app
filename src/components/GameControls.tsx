@@ -50,24 +50,18 @@ export default function GameControls({ enterGame }: GameControlsProps) {
         />
       </div>
 
-      <div
-        className={clsx(
-          {
-            "opacity-100": betAmount > 0,
-            "opacity-25": betAmount === parseEther("0"),
-          },
-          "grid grid-cols-2 gap-4 transition-all"
-        )}
-      >
+      <div className="grid grid-cols-2 gap-4 transition-all">
         <Button
           label="Heads"
           style={ButtonStyle.Tertiary}
+          disabled={betAmount === parseEther("0")}
           onClick={() => enterGame(CoinSide.Heads, betAmount)}
         />
 
         <Button
           label="Tails"
           style={ButtonStyle.Neutral}
+          disabled={betAmount === parseEther("0")}
           onClick={() => enterGame(CoinSide.Tails, betAmount)}
         />
       </div>

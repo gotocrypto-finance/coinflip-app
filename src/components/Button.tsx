@@ -18,6 +18,7 @@ export interface ButtonProps {
   size?: ButtonSize;
   style?: ButtonStyle;
   fullWidth?: boolean;
+  disabled?: boolean;
   onClick?: () => void;
 }
 
@@ -25,7 +26,8 @@ export default function Button({
   label,
   size,
   style,
-  fullWidth,
+  fullWidth = false,
+  disabled = false,
   onClick,
 }: ButtonProps) {
   let styleClasses = "bg-blue-500";
@@ -71,11 +73,17 @@ export default function Button({
       className={clsx(
         styleClasses,
         sizeClasses,
-        { "w-full": fullWidth },
+        {
+          "w-full": fullWidth,
+          "opacity-25": disabled,
+          "opacity-100": !disabled,
+          "cursor-default": disabled,
+          "cursor-pointer": !disabled,
+        },
         "rounded-full transition-all shadow-inner-strong"
       )}
       onClick={() => {
-        onClick && onClick();
+        onClick && !disabled && onClick();
       }}
     >
       {label}
