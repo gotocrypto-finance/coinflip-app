@@ -1,7 +1,10 @@
 "use client";
 
+import { useEffect } from "react";
+
 import { useAccount, useWriteContract } from "wagmi";
 import { simulateContract } from "@wagmi/core";
+import { formatEther, parseEther } from "viem";
 
 import abi from "@/abi/coinflip.abi.json";
 
@@ -10,15 +13,14 @@ import { CoinSide } from "@/types/coinSide";
 import { config, CONTRACT_ADDRESS } from "@/config";
 import { useGameState } from "@/context/gameState";
 
+import { generateSeed } from "@/utils/generateSeed";
+
 import Button, { ButtonStyle } from "@/components/Button";
 import ConnectButton from "@/components/ConnectButton";
 import GameControls from "@/components/GameControls";
 import RecentGames from "@/components/RecentGames";
-import { generateSeed } from "@/utils/generateSeed";
-import { formatEther, parseEther } from "viem";
 import GameProgress from "@/components/GameProgress";
 import PlayerMenu from "@/components/PlayerMenu";
-import { useEffect } from "react";
 
 export default function Home() {
   const { isConnected } = useAccount();

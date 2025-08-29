@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import { useState } from "react";
 import { formatEther, parseEther } from "viem";
 import { useReadContract } from "wagmi";
